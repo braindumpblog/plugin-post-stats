@@ -1,12 +1,16 @@
 {{ $posts := where site.RegularPages "Type" "post" }}
-{{ $posts := where (where site.RegularPages "Type" "post") ".Params.categories" "not in" "Linklog" }}
 
-{{ $titlePostsCount := len ( where $posts ".Params.title"  "!=" nil ) }}
-{{ $microPostsCount := len ( where $posts ".Params.title"  "=" nil ) }}
+  <!-- Remove linklog entries from list to display -->
+{{ $hidden_posts := where $posts "Params.categories" "intersect" (slice "Linklog") }}
+{{ $filtered_posts:= $posts | symdiff $hidden_posts }}
+
+
+{{ $titlePostsCount := len ( where $filtered_posts ".Params.title"  "!=" nil ) }}
+{{ $microPostsCount := len ( where $filtered_posts ".Params.title"  "=" nil ) }}
 
 {{ $scratch := newScratch }}
 {{ $scratch.Set "longCount" 0 }}
-{{ range $posts }}
+{{ range $filtered_posts }}
     {{ $scratch.Add "wordcount" .WordCount }}
 	{{ if ge .WordCount ($scratch.Get "longCount") }}
 		{{ $scratch.Set "longestPost" . }}
@@ -14,7 +18,7 @@
 	{{ end }}
 {{ end }}
 
-{{ $postCount :=  len ($posts) }}
+{{ $postCount :=  len ($filtered_posts) }}
 {{ $wordCount := $scratch.Get "wordcount" }}
 {{ $avgPostLength := div $wordCount $postCount }}
 <table class="post-stats-tbl">
@@ -33,7 +37,7 @@
     <tr>
 		<td>First Post Published</td>
 		<td>
-            {{ range last 1 $posts }}
+            {{ range last 1 $filtered_posts }}
                 {{ if .Title }}<a href="{{ .Permalink }}">{{ .Title }}</a> published on {{ .Date.Format "2006-01-02" }}
 				{{ else }}<a href="{{ .Permalink }}">Micro Post</a> published on {{ .Date.Format "2006-01-02" }} 
 				{{ end }}
@@ -60,7 +64,7 @@
 	</tr>
 </table>
 
-{{ $grouped := $posts.GroupByDate "2006" }}
+{{ $grouped := $filtered_posts.GroupByDate "2006" }}
 
 <h3 class="post-stats-hd">Posts Per Year</h3>
 
