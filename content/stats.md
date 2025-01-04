@@ -1,7 +1,7 @@
 ---
 title: "Blog statistics"
 url: "/stats/"
-menu: ""
+menu: "📊"
 weight: 100
 ---
 
