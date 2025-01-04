@@ -1,4 +1,5 @@
 {{ $posts := where site.RegularPages "Type" "post" }}
+{{ $posts := where (where site.RegularPages "Type" "post") ".Params.categories" "not in" "Linklog" }}
 
 {{ $titlePostsCount := len ( where $posts ".Params.title"  "!=" nil ) }}
 {{ $microPostsCount := len ( where $posts ".Params.title"  "=" nil ) }}
