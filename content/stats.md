@@ -1,7 +1,7 @@
 ---
 title: "Stats"
 url: "/stats/"
-menu: "main"
+menu: ""
 weight: 100
 ---
 
