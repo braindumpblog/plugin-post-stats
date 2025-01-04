@@ -3,8 +3,14 @@
     {{ $recapYear := cond (gt $now.Month 11) $now.Year (sub $now.Year 1) }}
     {{ $lastYear := sub $recapYear 1 }}
 
-    {{ $recapPosts := where .Site.RegularPages "Type" "post" }}
-    {{ $postsLastYear := where .Site.RegularPages "Type" "post" }}
+    {{ $posts := where .Site.RegularPages "Type" "post" }}
+
+    <!-- Remove linklog entries from list to display -->
+    {{ $hidden_posts := where $posts "Params.categories" "intersect" (slice "Linklog") }}
+    {{ $filtered_posts:= $posts | symdiff $hidden_posts }}
+
+    {{ $recapPosts := $filtered_posts }}
+    {{ $postsLastYear := $filtered_posts }}
 
     {{ $recapPosts := where $recapPosts "Date.Year" $recapYear }}
     {{ $postsLastYear := where $postsLastYear "Date.Year" $lastYear }}
